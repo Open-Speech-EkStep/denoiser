@@ -6,7 +6,7 @@
 # author: adefossez
 
 import logging
-
+import os
 import torch.hub
 
 from .demucs import Demucs
@@ -14,10 +14,11 @@ from .utils import deserialize_model
 
 logger = logging.getLogger(__name__)
 ROOT = "https://dl.fbaipublicfiles.com/adiyoss/denoiser/"
+DENOISER_MODEL_PATH = os.environ.get('DENOISER_MODEL_PATH')
 DNS_48_URL = ROOT + "dns48-11decc9d8e3f0998.th"
 DNS_64_URL = ROOT + "dns64-a7761ff99a7d5bb6.th"
 MASTER_64_URL = ROOT + "master64-8a5dfb4bb92753dd.th"
-VALENTINI_NC = ROOT + 'valentini_nc-93fc4337.th'  # Non causal Demucs on Valentini
+VALENTINI_NC = ROOT + 'valentini_nc-93fc4337.th' # Non causal Demucs on Valentini
 
 
 def _demucs(pretrained, url, **kwargs):
@@ -27,10 +28,14 @@ def _demucs(pretrained, url, **kwargs):
         model.load_state_dict(state_dict)
     return model
 
+def load_model_on_disk(model_path, **kwargs):
+    model = Demucs(**kwargs, sample_rate=16000)
+    state_dict = torch.load(model_path, map_location='cpu')
+    model.load_state_dict(state_dict)
+    return model
 
 def dns48(pretrained=True):
-    return _demucs(pretrained, DNS_48_URL, hidden=48)
-
+    return load_model_on_disk(DENOISER_MODEL_PATH, hidden=48)
 
 def dns64(pretrained=True):
     return _demucs(pretrained, DNS_64_URL, hidden=64)
