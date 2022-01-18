@@ -1,3 +1,12 @@
+# Usage instructions
+
+```
+wget https://storage.googleapis.com/vakyaansh-open-models/denoiser_model/denoiser_dns48.pth
+export DENOISER_MODEL_PATH=<model path on disk>
+python -m denoiser.enhance --dns48 --noisy_dir <path to files containing noisy wavs> --out_dir <output directory> --sample_rate 16000 --num_workers 1 --device cpu
+```
+
+
 # Real Time Speech Enhancement in the Waveform Domain (Interspeech 2020)
 
 ![tests badge](https://github.com/facebookresearch/denoiser/workflows/tests/badge.svg)
